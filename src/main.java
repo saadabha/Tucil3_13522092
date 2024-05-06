@@ -3,6 +3,9 @@ package src;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 
 public class Main {
     private JFrame frame;
@@ -13,6 +16,8 @@ public class Main {
     private JTextArea resultArea;
     private JLabel nodeCountLabel;
     private JLabel timeLabel;
+    private JLabel memoryLabel;
+    private JLabel pathlengthLabel;
 
     static class IntegerWrapper {
         public int value;
@@ -48,7 +53,7 @@ public class Main {
         algorithmLabel.setBounds(20, 80, 100, 20);
         frame.add(algorithmLabel);
 
-        algorithmComboBox = new JComboBox<>(new String[]{"UCS", "Greedy", "A*"});
+        algorithmComboBox = new JComboBox<>(new String[]{"UCS", "GBFS", "A*"});
         algorithmComboBox.setBounds(120, 80, 200, 20);
         frame.add(algorithmComboBox);
 
@@ -69,21 +74,28 @@ public class Main {
         timeLabel.setBounds(220, 310, 200, 20);
         frame.add(timeLabel);
 
+        memoryLabel = new JLabel("");
+        memoryLabel.setBounds(20, 330, 200, 20);
+        frame.add(memoryLabel);
+
+        pathlengthLabel = new JLabel("");
+        pathlengthLabel.setBounds(220, 330, 200, 20);
+        frame.add(pathlengthLabel);
+
         findButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String startWord = startField.getText().toLowerCase();
                 if (!util.isWordInDictionary(startWord)) {
-                    resultArea.setText("Kata tidak ditemukan dalam kamus. Silakan masukkan kata yang valid.");
+                    resultArea.setText("Kata awal tidak ditemukan dalam kamus.\n" + "Silahkan masukkan kata yang valid.");
                     return;
                 }
         
-
                 String endWord = endField.getText().toLowerCase();
                 if (!util.isWordInDictionary(endWord) || startWord.length() != endWord.length()){
                     if (!util.isWordInDictionary(endWord)) {
-                        resultArea.setText("Kata tidak ditemukan dalam kamus. Silakan masukkan kata yang valid.");
+                        resultArea.setText("Kata tujuan tidak ditemukan dalam kamus.\n" + "Silahkan masukkan kata yang valid.");
                     } else {
-                        resultArea.setText("Panjang kata tidak sama dengan panjang kata awal. Silakan masukkan kata yang valid.");
+                        resultArea.setText("Panjang kata tujuan tidak sama dengan panjang kata awal.\n" + "Silahkan masukkan kata yang valid.");
                     }
                     return;
                 }
@@ -100,7 +112,7 @@ public class Main {
                     case "UCS":
                         ladder = ucs.findShortestLadder(startWord, endWord, words, countnode);
                         break;
-                    case "Greedy":
+                    case "GBFS":
                         ladder = greedy.findShortestLadder(startWord, endWord, words, countnode);
                         break;
                     case "A*":
@@ -114,6 +126,12 @@ public class Main {
                 resultArea.setText("Shortest Ladder:\n" + String.join("\n", ladder));
                 nodeCountLabel.setText("Node Count: " + countnode.value);
                 timeLabel.setText("Execution Time: " + seconds + " s");
+                pathlengthLabel.setText("Path Length: " + (ladder.size() - 1));
+
+                MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+                MemoryUsage heapMemoryUsage = memoryBean.getHeapMemoryUsage();
+                long usedMemory = heapMemoryUsage.getUsed();
+                memoryLabel.setText("Used Memory: " + usedMemory + " bytes");
             }
         });
 

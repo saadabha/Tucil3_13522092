@@ -16,7 +16,7 @@ public class util {
         return path;
     }
 
-    public static Set<String> getneighbors(String word, Set<String> dictionary, Set<String> visited) {
+    public static Set<String> getneighbors(String word, Set<String> dictionary) {
         Set<String> neigbhors = new HashSet<>();
         for (int i = 0; i < word.length(); i++) {
             char[] chars = word.toCharArray();

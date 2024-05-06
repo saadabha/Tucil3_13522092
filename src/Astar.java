@@ -28,7 +28,7 @@ public class Astar {
 
             visited.add(currentWord);
 
-            for (String neighbor : util.getneighbors(currentWord, dictionary, visited)) {
+            for (String neighbor : util.getneighbors(currentWord, dictionary)) {
                 if (!visited.contains(neighbor)) {
                     node neighborNode = new node(neighbor, current,  greedy.hammingDistance(neighbor, endWord));
                     neighborNode.cost += neighborNode.distancefromroot();
@@ -37,6 +37,7 @@ public class Astar {
             }
         }
 
+        countnode.value = visited.size()+1;
         return Collections.singletonList("No ladder found");
     }
 }

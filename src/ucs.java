@@ -28,7 +28,7 @@ public class ucs {
 
             visited.add(currentWord);
 
-            for (String neighbor : util.getneighbors(currentWord, dictionary, visited)) {
+            for (String neighbor : util.getneighbors(currentWord, dictionary)) {
                 if (!visited.contains(neighbor)) {
                     node neighborNode = new node(neighbor, current, current.cost + 1);
                     pq.offer(neighborNode);
@@ -36,6 +36,7 @@ public class ucs {
             }
         }
 
+        countnode.value = visited.size()+1;
         return Collections.singletonList("No ladder found");
     }
 }
