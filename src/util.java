@@ -3,11 +3,7 @@ package src;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class util {
     public static List<String> reconstructpath(node node) {
@@ -38,7 +34,7 @@ public class util {
 
     public static boolean isWordInDictionary(String word) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("Tucil3_13522092/test/dictionary.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("../test/dictionary.txt"));
             String line = reader.readLine();
 
             while (line != null) {
@@ -58,7 +54,7 @@ public class util {
     public static Set<String> getWordsWithLength(int length) {
         Set<String> words = new HashSet<>();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("Tucil3_13522092/test/dictionary.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("../test/dictionary.txt"));
             String line = reader.readLine();
 
             while (line != null) {

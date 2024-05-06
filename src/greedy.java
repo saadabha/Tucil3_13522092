@@ -1,13 +1,8 @@
 package src;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
-import src.main.IntegerWrapper;
+import src.Main.IntegerWrapper;
 
 public class greedy {
     public static int hammingDistance(String str1, String str2) {
@@ -34,17 +29,18 @@ public class greedy {
             node current = pq.poll();
             String currentWord = current.word;
 
-            countnode.value += 1;
-
             if (currentWord.equals(endWord)) {
+                countnode.value = visited.size()+1;
                 return util.reconstructpath(current);
             }
 
             visited.add(currentWord);
 
             for (String neighbor : util.getneighbors(currentWord, dictionary, visited)) {
-                node neighborNode = new node(neighbor, current, hammingDistance(neighbor, endWord));
-                pq.offer(neighborNode);
+                if (!visited.contains(neighbor)) {
+                    node neighborNode = new node(neighbor, current, hammingDistance(neighbor, endWord));
+                    pq.offer(neighborNode);
+                }
             }
         }
 

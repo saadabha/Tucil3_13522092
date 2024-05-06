@@ -22,5 +22,15 @@ public class node {
         this.parent = parent;
         this.cost = cost;
     }
+
+    public int distancefromroot() {
+        int count = 0;
+        node current = this;
+        while (current.parent != null) {
+            count++;
+            current = current.parent;
+        }
+        return count;
+    }
 }
 

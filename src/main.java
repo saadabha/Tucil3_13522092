@@ -1,8 +1,19 @@
 package src;
 
+import javax.swing.*;
+import java.awt.event.*;
 import java.util.*;
 
-public class main {
+public class Main {
+    private JFrame frame;
+    private JTextField startField;
+    private JTextField endField;
+    private JComboBox<String> algorithmComboBox;
+    private JButton findButton;
+    private JTextArea resultArea;
+    private JLabel nodeCountLabel;
+    private JLabel timeLabel;
+
     static class IntegerWrapper {
         public int value;
 
@@ -11,91 +22,109 @@ public class main {
         }
     }
 
+    public Main() {
+        frame = new JFrame("Word Ladder Solver");
+        frame.setSize(400, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(null);
+
+        JLabel startLabel = new JLabel("Start Word:");
+        startLabel.setBounds(20, 20, 100, 20);
+        frame.add(startLabel);
+
+        startField = new JTextField();
+        startField.setBounds(120, 20, 200, 20);
+        frame.add(startField);
+
+        JLabel endLabel = new JLabel("End Word:");
+        endLabel.setBounds(20, 50, 100, 20);
+        frame.add(endLabel);
+
+        endField = new JTextField();
+        endField.setBounds(120, 50, 200, 20);
+        frame.add(endField);
+
+        JLabel algorithmLabel = new JLabel("Algorithm:");
+        algorithmLabel.setBounds(20, 80, 100, 20);
+        frame.add(algorithmLabel);
+
+        algorithmComboBox = new JComboBox<>(new String[]{"UCS", "Greedy", "A*"});
+        algorithmComboBox.setBounds(120, 80, 200, 20);
+        frame.add(algorithmComboBox);
+
+        findButton = new JButton("Find Shortest Ladder");
+        findButton.setBounds(120, 110, 200, 30);
+        frame.add(findButton);
+
+        resultArea = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+        scrollPane.setBounds(20, 150, 360, 150);
+        frame.add(scrollPane);
+
+        nodeCountLabel = new JLabel("");
+        nodeCountLabel.setBounds(20, 310, 200, 20);
+        frame.add(nodeCountLabel);
+
+        timeLabel = new JLabel("");
+        timeLabel.setBounds(220, 310, 200, 20);
+        frame.add(timeLabel);
+
+        findButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String startWord = startField.getText().toLowerCase();
+                if (!util.isWordInDictionary(startWord)) {
+                    resultArea.setText("Kata tidak ditemukan dalam kamus. Silakan masukkan kata yang valid.");
+                    return;
+                }
+        
+
+                String endWord = endField.getText().toLowerCase();
+                if (!util.isWordInDictionary(endWord) || startWord.length() != endWord.length()){
+                    if (!util.isWordInDictionary(endWord)) {
+                        resultArea.setText("Kata tidak ditemukan dalam kamus. Silakan masukkan kata yang valid.");
+                    } else {
+                        resultArea.setText("Panjang kata tidak sama dengan panjang kata awal. Silakan masukkan kata yang valid.");
+                    }
+                    return;
+                }
+
+                String algorithm = (String) algorithmComboBox.getSelectedItem();
+
+                IntegerWrapper countnode = new IntegerWrapper(0);
+                List<String> ladder = new ArrayList<>();
+                long startTime = System.nanoTime();
+                long endTime = 0;
+                Set<String> words = util.getWordsWithLength(startWord.length());
+
+                switch (algorithm) {
+                    case "UCS":
+                        ladder = ucs.findShortestLadder(startWord, endWord, words, countnode);
+                        break;
+                    case "Greedy":
+                        ladder = greedy.findShortestLadder(startWord, endWord, words, countnode);
+                        break;
+                    case "A*":
+                        ladder = Astar.findShortestLadder(startWord, endWord, words, countnode);
+                        break;
+                }
+                endTime = System.nanoTime();
+                long duration = endTime - startTime;
+                double seconds = duration / 1_000_000_000.0;
+
+                resultArea.setText("Shortest Ladder:\n" + String.join("\n", ladder));
+                nodeCountLabel.setText("Node Count: " + countnode.value);
+                timeLabel.setText("Execution Time: " + seconds + " s");
+            }
+        });
+
+        frame.setVisible(true);
+    }
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Masukkan string mulai: ");
-        String startword = scanner.nextLine();
-        startword = startword.toLowerCase();
-        while (!util.isWordInDictionary(startword)) {
-            System.out.println("Kata tidak ditemukan dalam kamus. Silakan masukkan kata yang valid.");
-            System.out.print("Masukkan string mulai: ");
-            startword = scanner.nextLine();
-            startword = startword.toLowerCase();
-        }
-
-        System.out.print("Masukkan string tujuan: ");
-        String endword = scanner.nextLine();
-        endword = endword.toLowerCase();
-        while (!util.isWordInDictionary(endword) || startword.length() != endword.length()){
-            if (!util.isWordInDictionary(endword)) {
-                System.out.println("Kata tidak ditemukan dalam kamus. Silakan masukkan kata yang valid.");
-            } else {
-                System.out.println("Panjang kata tidak sama dengan panjang kata awal. Silakan masukkan kata yang valid.");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Main();
             }
-            System.out.print("Masukkan string tujuan: ");
-            endword = scanner.nextLine();
-            endword = endword.toLowerCase();
-        }
-
-        System.out.println("Berikut adalah pilihan algoritma yang dapat digunakan:");
-        System.out.println("1. UCS");
-        System.out.println("2. Greedy");
-        System.out.println("3. A*");
-
-        boolean isValidInput = false;
-        int choice = 0;
-
-        while (!isValidInput) {
-            try {
-                System.out.print("Masukkan pilihan algoritma: ");
-                choice = scanner.nextInt();
-                while (choice < 1 || choice > 3) {
-                    System.out.println("Pilihan algoritma tidak valid. Silakan masukkan pilihan algoritma yang valid.");
-                    System.out.print("Masukkan pilihan algoritma: ");
-                    choice = scanner.nextInt();
-                }
-                isValidInput = true;
-            } catch (InputMismatchException e) {
-                System.out.println("Input tidak valid. Silakan masukkan input yang valid.");
-                scanner.nextLine();
-            }
-        }
-        scanner.close();
-
-        IntegerWrapper countnode = new IntegerWrapper(0);
-        List<String> result = new ArrayList<>();
-        long startTime = System.nanoTime();
-        long endTime = 0;
-        Set<String> words = util.getWordsWithLength(startword.length());
-
-        switch (choice) {
-            case 1:
-                result = ucs.findShortestLadder(startword, endword, words, countnode);
-                for (String str : result) {
-                    System.out.println(str);
-                }
-                endTime = System.nanoTime();
-                break;
-            case 2:
-                result = ucs.findShortestLadder(startword, endword, words, countnode);
-                for (String str : result) {
-                    System.out.println(str);
-                }
-                endTime = System.nanoTime();
-                break;
-            case 3:
-                result = ucs.findShortestLadder(startword, endword, words, countnode);
-                for (String str : result) {
-                    System.out.println(str);
-                }
-                endTime = System.nanoTime();
-                break;
-        }
-        long duration = endTime - startTime;
-
-        double seconds = duration / 1_000_000_000.0;
-        System.out.println("Jumlah node yang dikunjungi: " + countnode.value);
-        System.out.println("Waktu eksekusi: " + seconds + " s");
+        });
     }
 }

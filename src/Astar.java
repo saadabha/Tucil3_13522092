@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import src.main.IntegerWrapper;
+import src.Main.IntegerWrapper;
 
 public class Astar {
     public static List<String> findShortestLadder(String startWord, String endWord, Set<String> dictionary, IntegerWrapper countnode) {
@@ -15,24 +15,25 @@ public class Astar {
         Set<String> visited = new HashSet<>();
         node startNode = new node(startWord, greedy.hammingDistance(startWord, endWord));
         
-        countnode.value++;
         pq.offer(startNode);
 
         while (!pq.isEmpty()) {
             node current = pq.poll();
             String currentWord = current.word;
 
-            countnode.value += 1;
-
             if (currentWord.equals(endWord)) {
+                countnode.value = visited.size()+1;
                 return util.reconstructpath(current);
             }
 
             visited.add(currentWord);
 
             for (String neighbor : util.getneighbors(currentWord, dictionary, visited)) {
-                node neighborNode = new node(neighbor, current, current.cost + 1 + greedy.hammingDistance(neighbor, endWord));
-                pq.offer(neighborNode);
+                if (!visited.contains(neighbor)) {
+                    node neighborNode = new node(neighbor, current,  greedy.hammingDistance(neighbor, endWord));
+                    neighborNode.cost += neighborNode.distancefromroot();
+                    pq.offer(neighborNode);
+                }
             }
         }
 

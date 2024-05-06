@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import src.main.IntegerWrapper;
+import src.Main.IntegerWrapper;
 
 public class ucs {
     public static List<String> findShortestLadder(String startWord, String endWord, Set<String> dictionary, IntegerWrapper countnode) {
@@ -21,9 +21,8 @@ public class ucs {
             node current = pq.poll();
             String currentWord = current.word;
 
-            countnode.value += 1;
-
             if (currentWord.equals(endWord)) {
+                countnode.value = visited.size()+1;
                 return util.reconstructpath(current);
             }
 
