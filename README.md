@@ -31,7 +31,7 @@ java src/Main
 ```
 
 ## Usage
-1. Input start sord
+1. Input start word
 2. Input end word
 3. Choose the algorithm
 4. Click the Find Shortest Ladder button
